@@ -5,4 +5,4 @@ LOGGER: Logger = getLogger(__package__)
 
 NAME = "Anova Bluetooth"
 DOMAIN = "anova_bluetooth"
-VERSION = "0.0.1"
+VERSION = "0.1.2"
