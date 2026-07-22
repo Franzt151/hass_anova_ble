@@ -1,6 +1,10 @@
-"""Sensor platform for integration_blueprint."""
-from homeassistant.components.climate import ClimateEntity, ClimateEntityDescription, ClimateEntityFeature
-from homeassistant.components.climate.const import HVAC_MODE_HEAT, HVAC_MODE_OFF
+"""Climate platform for anova_bluetooth."""
+from homeassistant.components.climate import (
+    ClimateEntity,
+    ClimateEntityDescription,
+    ClimateEntityFeature,
+    HVACMode,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfTemperature
 
@@ -11,7 +15,7 @@ from .entity import AnovaBluetoothEntity
 from anova_ble import AnovaStatus
 
 async def async_setup_entry(hass, entry: ConfigEntry, async_add_devices):
-    """Set up the sensor platform."""
+    """Set up the climate platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices([
         AnovaBluetoothClimate(
@@ -25,7 +29,7 @@ async def async_setup_entry(hass, entry: ConfigEntry, async_add_devices):
 
 
 class AnovaBluetoothClimate(AnovaBluetoothEntity, ClimateEntity):
-    """integration_blueprint Climate class."""
+    """Anova Bluetooth Climate class."""
 
     def __init__(
         self,
@@ -38,8 +42,12 @@ class AnovaBluetoothClimate(AnovaBluetoothEntity, ClimateEntity):
         self.coordinator = coordinator
 
         self._attr_temperature_unit = UnitOfTemperature.FAHRENHEIT
-        self._attr_hvac_modes = [HVAC_MODE_HEAT, HVAC_MODE_OFF]
-        self._attr_supported_features = ClimateEntityFeature.TARGET_TEMPERATURE
+        self._attr_hvac_modes = [HVACMode.HEAT, HVACMode.OFF]
+        self._attr_supported_features = (
+            ClimateEntityFeature.TARGET_TEMPERATURE
+            | ClimateEntityFeature.TURN_ON
+            | ClimateEntityFeature.TURN_OFF
+        )
 
         self._attr_max_temp = 211.8
         self._attr_min_temp = 41
@@ -61,9 +69,9 @@ class AnovaBluetoothClimate(AnovaBluetoothEntity, ClimateEntity):
     def hvac_mode(self):
         if state := self.coordinator.circulator.state:
             if state.status == AnovaStatus.Running:
-                return HVAC_MODE_HEAT
+                return HVACMode.HEAT
             else:
-                return HVAC_MODE_OFF
+                return HVACMode.OFF
         else:
             return None
 
@@ -73,9 +81,9 @@ class AnovaBluetoothClimate(AnovaBluetoothEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode):
         """Set new target hvac mode."""
-        if hvac_mode == HVAC_MODE_HEAT:
+        if hvac_mode == HVACMode.HEAT:
             await self.coordinator.circulator.start()
-        if hvac_mode == HVAC_MODE_OFF:
+        if hvac_mode == HVACMode.OFF:
             await self.coordinator.circulator.stop()
 
         await self.coordinator.async_request_refresh()
