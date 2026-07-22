@@ -42,10 +42,12 @@ class AnovaBluetoothSwitch(AnovaBluetoothEntity, SwitchEntity):
         self.coordinator = coordinator
 
     async def async_turn_on(self):
+        """Start the cook timer."""
         await self.coordinator.circulator.start_timer()
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self):
+        """Stop the cook timer."""
         await self.coordinator.circulator.stop_timer()
         await self.coordinator.async_request_refresh()
 
