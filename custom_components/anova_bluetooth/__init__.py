@@ -1,14 +1,11 @@
-"""Custom integration to integrate integration_blueprint with Home Assistant.
-
-For more details about this integration, please refer to
-https://github.com/ludeeus/integration_blueprint
-"""
+"""Custom integration to integrate anova_bluetooth with Home Assistant."""
 from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.loader import async_get_integration
 
 from homeassistant.components.bluetooth.match import ADDRESS, BluetoothCallbackMatcher
 
@@ -25,6 +22,7 @@ PLATFORMS: list[Platform] = [
     Platform.SWITCH,
 ]
 
+
 # https://developers.home-assistant.io/docs/config_entries_index/#setting-up-an-entry
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
@@ -32,6 +30,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     assert address is not None
 
     hass.data.setdefault(DOMAIN, {})
+
+    # Single source of truth for the version: manifest.json, which the
+    # release workflow stamps from the GitHub release tag.
+    integration = await async_get_integration(hass, DOMAIN)
+    integration_version = (
+        str(integration.version) if integration.version else "unknown"
+    )
 
     device = bluetooth.async_ble_device_from_address(hass, address.upper(), connectable=True)
 
@@ -59,7 +64,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data[DOMAIN][entry.entry_id] = coordinator = AnovaDataUpdateCoordinator(
         hass=hass,
-        circulator=anova
+        circulator=anova,
+        integration_version=integration_version,
     )
 
     await coordinator.async_config_entry_first_refresh()

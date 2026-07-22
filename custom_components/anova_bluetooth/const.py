@@ -6,8 +6,8 @@ LOGGER: Logger = getLogger(__package__)
 NAME = "Anova Bluetooth"
 DOMAIN = "anova_bluetooth"
 
-# Keep in sync with the "version" field in manifest.json.
-VERSION = "0.1.2"
+# NOTE: the integration version is read at runtime from manifest.json
+# (see __init__.py); it is deliberately not duplicated here.
 
 # Shown in the device card. This is the hardware, not a version number.
 MODEL = "Precision Cooker (Bluetooth)"

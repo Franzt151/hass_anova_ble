@@ -32,9 +32,11 @@ class AnovaDataUpdateCoordinator(DataUpdateCoordinator):
         self,
         hass: HomeAssistant,
         circulator: AnovaBLEPrecisionCooker,
+        integration_version: str = "unknown",
     ) -> None:
         """Initialize."""
         self.circulator = circulator
+        self.integration_version = integration_version
         super().__init__(
             hass=hass,
             logger=LOGGER,
