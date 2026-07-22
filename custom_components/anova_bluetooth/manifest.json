@@ -17,5 +17,5 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/ninjawarrior1337/hass_anova_ble/issues",
   "requirements": ["anova-ble @ git+https://github.com/Franzt151/anova_ble@master"],
-  "version": "0.0.1"
+  "version": "0.1.0"
 }
