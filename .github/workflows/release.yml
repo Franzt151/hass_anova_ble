@@ -1,35 +1,43 @@
-name: "Release"
+name: Release
 
 on:
   release:
-    types:
-      - "published"
+    types: [published]
 
-permissions: {}
+permissions:
+  contents: write
 
 jobs:
   release:
-    name: "Release"
-    runs-on: "ubuntu-latest"
-    permissions:
-      contents: write
+    name: Build and attach HACS zip
+    runs-on: ubuntu-latest
     steps:
-      - name: "Checkout the repository"
-        uses: "actions/checkout@v4.1.0"
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: "Adjust version number"
-        shell: "bash"
+      - name: Stamp manifest.json with the release tag
         run: |
-          yq -i -o json '.version="${{ github.event.release.tag_name }}"' \
-            "${{ github.workspace }}/custom_components/integration_blueprint/manifest.json"
+          set -e
+          # refs/tags/v0.1.3 -> 0.1.3
+          version="${GITHUB_REF#refs/tags/}"
+          version="${version#v}"
+          echo "Release version: $version"
+          jq --arg v "$version" '.version = $v' \
+            custom_components/anova_bluetooth/manifest.json > manifest.tmp
+          mv manifest.tmp custom_components/anova_bluetooth/manifest.json
+          echo "--- resulting manifest.json ---"
+          cat custom_components/anova_bluetooth/manifest.json
 
-      - name: "ZIP the integration directory"
-        shell: "bash"
+      - name: Build the zip
         run: |
-          cd "${{ github.workspace }}/custom_components/integration_blueprint"
-          zip integration_blueprint.zip -r ./
+          set -e
+          cd custom_components/anova_bluetooth
+          # HACS expects the component files at the ROOT of the zip,
+          # not nested inside a folder.
+          zip -r anova_bluetooth.zip . -x '*.zip'
+          unzip -l anova_bluetooth.zip
 
-      - name: "Upload the ZIP file to the release"
-        uses: softprops/action-gh-release@v0.1.15
+      - name: Attach zip to the release
+        uses: softprops/action-gh-release@v2
         with:
-          files: ${{ github.workspace }}/custom_components/integration_blueprint/integration_blueprint.zip
+          files: custom_components/anova_bluetooth/anova_bluetooth.zip
