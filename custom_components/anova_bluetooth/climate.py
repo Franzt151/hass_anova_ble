@@ -6,7 +6,7 @@ from homeassistant.components.climate import (
     HVACMode,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfTemperature
+from homeassistant.const import PRECISION_TENTHS, UnitOfTemperature
 
 from .const import DOMAIN
 from .coordinator import AnovaDataUpdateCoordinator
