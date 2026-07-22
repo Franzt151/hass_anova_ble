@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Stamp manifest.json with the release tag
         run: |
@@ -38,6 +38,6 @@ jobs:
           unzip -l anova_bluetooth.zip
 
       - name: Attach zip to the release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: custom_components/anova_bluetooth/anova_bluetooth.zip
