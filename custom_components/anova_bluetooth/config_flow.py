@@ -20,10 +20,12 @@ class AnovaBLEFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     def __init__(self):
+        """Initialize the config flow."""
         self._discovery_info: bluetooth.BluetoothServiceInfoBleak | None = None
         self._discovered_address: str | None = None
 
     async def async_step_bluetooth(self, info: bluetooth.BluetoothServiceInfoBleak):
+        """Handle a cooker discovered over Bluetooth."""
         address = device_registry.format_mac(info.address)
         await self.async_set_unique_id(address)
         self._abort_if_unique_id_configured()
