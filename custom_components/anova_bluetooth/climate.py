@@ -54,22 +54,24 @@ class AnovaBluetoothClimate(AnovaBluetoothEntity, ClimateEntity):
         # Display current/target temperature to one decimal place.
         self._attr_precision = PRECISION_TENTHS
         self._attr_target_temperature_step = 0.1
-        
 
     @property
     def target_temperature(self):
+        """Return the temperature the cooker is set to hold."""
         if state := self.coordinator.circulator.state:
             return state.target_temp
         return None
 
     @property
     def current_temperature(self):
+        """Return the current water temperature."""
         if state := self.coordinator.circulator.state:
             return state.current_temp
         return None
 
     @property
     def hvac_mode(self):
+        """Return HEAT while circulating, OFF otherwise."""
         if state := self.coordinator.circulator.state:
             if state.status == AnovaStatus.Running:
                 return HVACMode.HEAT
@@ -79,6 +81,7 @@ class AnovaBluetoothClimate(AnovaBluetoothEntity, ClimateEntity):
             return None
 
     async def async_set_temperature(self, **kwargs):
+        """Set a new target temperature."""
         await self.coordinator.circulator.set_temp(kwargs["temperature"])
         await self.coordinator.async_request_refresh()
 
