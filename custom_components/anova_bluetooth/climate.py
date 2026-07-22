@@ -51,7 +51,10 @@ class AnovaBluetoothClimate(AnovaBluetoothEntity, ClimateEntity):
 
         self._attr_max_temp = 211.8
         self._attr_min_temp = 41
-        self._attr_precision = 0.1
+        # Display current/target temperature to one decimal place.
+        self._attr_precision = PRECISION_TENTHS
+        self._attr_target_temperature_step = 0.1
+        
 
     @property
     def target_temperature(self):
